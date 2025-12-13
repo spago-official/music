@@ -166,16 +166,6 @@ export default function Home() {
 
 
   /**
-   * BPM変更
-   */
-  const handleBPMChange = (newBpm: number) => {
-    setBpm(newBpm);
-    if (transportRef.current) {
-      transportRef.current.setBPM(newBpm);
-    }
-  };
-
-  /**
    * 音量変更
    */
   const handleVolumeChange = (newVolume: number) => {
@@ -273,11 +263,9 @@ export default function Home() {
           <div className="flex justify-center">
             <TransportControls
               isPlaying={isPlaying}
-              bpm={bpm}
               volume={volume}
               onPlayPause={handlePlayPause}
               onReset={handleReset}
-              onBPMChange={handleBPMChange}
               onVolumeChange={handleVolumeChange}
               disabled={isLoading}
             />
