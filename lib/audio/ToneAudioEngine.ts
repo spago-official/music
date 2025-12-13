@@ -10,6 +10,7 @@ export class ToneAudioEngine {
   private player: Tone.Player | null = null;
   private pitchShift: Tone.PitchShift | null = null;
   private masterGain: Tone.Gain | null = null;
+  private gateGain: Tone.Gain | null = null;
   private isInitialized: boolean = false;
   private isPlaying: boolean = false;
   private currentPlaybackRate: number = 1.0;
@@ -35,8 +36,12 @@ export class ToneAudioEngine {
         feedback: 0,        // フィードバックなし
       });
 
-      // 接続: Player -> PitchShift -> MasterGain -> Destination
-      this.pitchShift.connect(this.masterGain);
+      // ゲート用ゲイン（初期値0 = 無音）
+      this.gateGain = new Tone.Gain(0);
+
+      // 接続: Player -> PitchShift -> GateGain -> MasterGain -> Destination
+      this.pitchShift.connect(this.gateGain);
+      this.gateGain.connect(this.masterGain);
 
       this.isInitialized = true;
 
@@ -121,6 +126,24 @@ export class ToneAudioEngine {
    */
   reset(): void {
     this.stop();
+    if (this.gateGain) {
+      this.gateGain.gain.cancelScheduledValues(Tone.now());
+      this.gateGain.gain.value = 0;
+    }
+  }
+
+  /**
+   * ゲート開閉（滑らかに）
+   * @param open true=開く（音が聞こえる）, false=閉じる（無音）
+   * @param transitionMs 遷移時間（ミリ秒）
+   */
+  setGate(open: boolean, transitionMs: number = 50): void {
+    if (!this.gateGain) return;
+
+    const targetValue = open ? 1.0 : 0.0;
+    const transitionSec = transitionMs / 1000;
+
+    this.gateGain.gain.rampTo(targetValue, transitionSec);
   }
 
   /**

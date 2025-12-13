@@ -45,6 +45,9 @@ export class ToneFollowMode {
     this.estimatedBPM = null;
     this.lastTapTime = 0;
 
+    // 初期状態は無音
+    this.audioEngine.setGate(false, 10);
+
     console.log('🎮 ToneFollowMode activated', this.config);
   }
 
@@ -55,6 +58,7 @@ export class ToneFollowMode {
     this.isActive = false;
     this.resetPlaybackRate();
     this.clearFadeOutTimer();
+    this.audioEngine.setGate(false, 50);
   }
 
   /**
@@ -68,6 +72,18 @@ export class ToneFollowMode {
 
     // 最後のタップ時刻を更新
     this.lastTapTime = timestamp;
+
+    // ゲートを開く（音を鳴らす）
+    this.audioEngine.setGate(true, 10);
+
+    // 既存のフェードアウトタイマーをクリア
+    this.clearFadeOutTimer();
+
+    // タップが止まったらフェードアウト（1.5秒後）
+    this.fadeOutTimer = setTimeout(() => {
+      this.audioEngine.setGate(false, 300);
+      console.log('🔇 Fading out (no tap detected)');
+    }, 1500);
 
     // タップ履歴に追加
     this.tapHistory.push(timestamp);

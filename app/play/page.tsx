@@ -22,7 +22,6 @@ function PlayContent() {
   const toneAudioEngineRef = useRef<ToneAudioEngine | null>(null);
   const transportRef = useRef<Transport | null>(null);
   const followModeRef = useRef<ToneFollowMode | null>(null);
-  const lastTapTimeRef = useRef<number>(0);
 
   // UI状態
   const [isInitialized, setIsInitialized] = useState(false);
@@ -37,8 +36,6 @@ function PlayContent() {
   const [error, setError] = useState<string | null>(null);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
-  // タップがない場合の自動停止時間（ミリ秒）
-  const AUTO_STOP_DELAY = 2000; // 2秒
 
   // 楽器が指定されていない場合はトップページにリダイレクト
   useEffect(() => {
@@ -126,8 +123,17 @@ function PlayContent() {
    */
   const handlePlayPause = useCallback(async () => {
     if (!isInitialized) {
-      // 初期化のみ（再生はしない）
+      // 初期化して再生開始
       await initialize();
+      if (!toneAudioEngineRef.current || !transportRef.current) return;
+
+      // 初期化完了後に再生開始
+      const toneEngine = toneAudioEngineRef.current;
+      const transport = transportRef.current;
+
+      toneEngine.play();
+      transport.start();
+      setIsPlaying(true);
       return;
     }
 
@@ -135,14 +141,12 @@ function PlayContent() {
     const toneEngine = toneAudioEngineRef.current!;
 
     if (isPlaying) {
-      // 一時停止
+      // 一時停止（音楽は流れ続けるがゲートで無音に）
       transport.stop();
-      toneEngine.stop(); // 実際の音楽も停止
+      toneEngine.setGate(false);
       setIsPlaying(false);
     } else {
-      // 再生開始（ボタンから）
-      // タップ時刻を更新して自動停止タイマーを開始
-      lastTapTimeRef.current = performance.now();
+      // 再生開始
       if (!toneEngine.getIsPlaying()) {
         toneEngine.play();
       }
@@ -170,9 +174,6 @@ function PlayContent() {
    * タップハンドラ
    */
   const handleTap = useCallback(async () => {
-    // タップ時刻を記録
-    lastTapTimeRef.current = performance.now();
-
     // 初期化されていない場合は初期化して再生開始
     if (!isInitialized) {
       await initialize();
@@ -241,41 +242,6 @@ function PlayContent() {
     return () => clearInterval(interval);
   }, [isPlaying]);
 
-  /**
-   * タップがない場合の自動停止
-   */
-  useEffect(() => {
-    if (!isPlaying) return;
-
-    console.log('🔄 Auto-stop timer started');
-
-    const interval = setInterval(() => {
-      const now = performance.now();
-      const timeSinceLastTap = now - lastTapTimeRef.current;
-
-      // デバッグログ（1秒ごと）
-      if (Math.floor(timeSinceLastTap / 1000) !== Math.floor((timeSinceLastTap - 100) / 1000)) {
-        console.log(`⏱️ Time since last tap: ${(timeSinceLastTap / 1000).toFixed(1)}s`);
-      }
-
-      // 最後のタップから一定時間経過したら自動停止
-      if (timeSinceLastTap > AUTO_STOP_DELAY) {
-        if (transportRef.current && toneAudioEngineRef.current) {
-          // Transportを停止
-          transportRef.current.stop();
-          // 実際の音楽も停止（重要！）
-          toneAudioEngineRef.current.stop();
-          setIsPlaying(false);
-          console.log('⏸ Auto-stopped: No taps for', AUTO_STOP_DELAY, 'ms');
-        }
-      }
-    }, 100); // 100msごとにチェック
-
-    return () => {
-      console.log('🛑 Auto-stop timer stopped');
-      clearInterval(interval);
-    };
-  }, [isPlaying]);
 
   /**
    * 音量変更
@@ -365,7 +331,7 @@ function PlayContent() {
           {isPlaying && (
             <div className="text-center">
               <p className="text-sm text-orange-600 font-semibold">
-                ⚠️ タップし続けないと音楽が止まります（2秒以内にタップ）
+                ⚠️ タップし続けないと音楽が止まります（1.5秒以内にタップ）
               </p>
             </div>
           )}
