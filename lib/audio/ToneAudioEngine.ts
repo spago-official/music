@@ -10,7 +10,6 @@ export class ToneAudioEngine {
   private player: Tone.Player | null = null;
   private pitchShift: Tone.PitchShift | null = null;
   private masterGain: Tone.Gain | null = null;
-  private gateGain: Tone.Gain | null = null;
   private isInitialized: boolean = false;
   private isPlaying: boolean = false;
   private currentPlaybackRate: number = 1.0;
@@ -36,12 +35,8 @@ export class ToneAudioEngine {
         feedback: 0,        // フィードバックなし
       });
 
-      // ゲート用ゲイン（初期値0）
-      this.gateGain = new Tone.Gain(0);
-
-      // 接続: Player -> PitchShift -> GateGain -> MasterGain -> Destination
-      this.pitchShift.connect(this.gateGain);
-      this.gateGain.connect(this.masterGain);
+      // 接続: Player -> PitchShift -> MasterGain -> Destination
+      this.pitchShift.connect(this.masterGain);
 
       this.isInitialized = true;
 
@@ -106,7 +101,7 @@ export class ToneAudioEngine {
     this.player.start();
     this.isPlaying = true;
 
-    console.log('▶️ Audio playing (gate closed)');
+    console.log('▶️ Audio playing');
   }
 
   /**
@@ -126,52 +121,6 @@ export class ToneAudioEngine {
    */
   reset(): void {
     this.stop();
-    if (this.gateGain) {
-      this.gateGain.gain.cancelScheduledValues(Tone.now());
-      this.gateGain.gain.value = 0;
-    }
-  }
-
-  /**
-   * ゲート開閉（滑らかに）
-   * @param open true=開く（音が聞こえる）, false=閉じる（無音）
-   * @param transitionMs 遷移時間（ミリ秒）
-   */
-  setGate(open: boolean, transitionMs: number = 50): void {
-    if (!this.gateGain) return;
-
-    const targetValue = open ? 1.0 : 0.0;
-    const transitionSec = transitionMs / 1000;
-
-    this.gateGain.gain.rampTo(targetValue, transitionSec);
-  }
-
-  /**
-   * ゲート一時開放（指定時間後に自動で閉じる）
-   * @param holdMs ゲートを開けておく時間（ミリ秒）
-   * @param openTransitionMs 開く時の遷移時間
-   * @param closeTransitionMs 閉じる時の遷移時間
-   */
-  openGateTemporarily(
-    holdMs: number,
-    openTransitionMs: number = 10,
-    closeTransitionMs: number = 50
-  ): void {
-    if (!this.gateGain) return;
-
-    const now = Tone.now();
-    const holdSec = holdMs / 1000;
-    const openSec = openTransitionMs / 1000;
-    const closeSec = closeTransitionMs / 1000;
-
-    // スケジュール済みの値をキャンセル
-    this.gateGain.gain.cancelScheduledValues(now);
-
-    // 即座に開く
-    this.gateGain.gain.rampTo(1.0, openSec, now);
-
-    // holdMs後に閉じる
-    this.gateGain.gain.rampTo(0.0, closeSec, now + holdSec);
   }
 
   /**
@@ -253,10 +202,6 @@ export class ToneAudioEngine {
     if (this.pitchShift) {
       this.pitchShift.dispose();
       this.pitchShift = null;
-    }
-    if (this.gateGain) {
-      this.gateGain.dispose();
-      this.gateGain = null;
     }
     if (this.masterGain) {
       this.masterGain.dispose();

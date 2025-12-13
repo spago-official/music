@@ -102,7 +102,6 @@ export default function Home() {
     if (isPlaying) {
       // 一時停止
       transport.stop();
-      toneEngine.setGate(false);
       setIsPlaying(false);
     } else {
       // 再生開始
