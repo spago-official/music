@@ -137,9 +137,12 @@ function PlayContent() {
     if (isPlaying) {
       // 一時停止
       transport.stop();
+      toneEngine.stop(); // 実際の音楽も停止
       setIsPlaying(false);
     } else {
-      // 再生開始
+      // 再生開始（ボタンから）
+      // タップ時刻を更新して自動停止タイマーを開始
+      lastTapTimeRef.current = performance.now();
       if (!toneEngine.getIsPlaying()) {
         toneEngine.play();
       }
@@ -244,22 +247,35 @@ function PlayContent() {
   useEffect(() => {
     if (!isPlaying) return;
 
+    console.log('🔄 Auto-stop timer started');
+
     const interval = setInterval(() => {
       const now = performance.now();
       const timeSinceLastTap = now - lastTapTimeRef.current;
 
+      // デバッグログ（1秒ごと）
+      if (Math.floor(timeSinceLastTap / 1000) !== Math.floor((timeSinceLastTap - 100) / 1000)) {
+        console.log(`⏱️ Time since last tap: ${(timeSinceLastTap / 1000).toFixed(1)}s`);
+      }
+
       // 最後のタップから一定時間経過したら自動停止
       if (timeSinceLastTap > AUTO_STOP_DELAY) {
         if (transportRef.current && toneAudioEngineRef.current) {
+          // Transportを停止
           transportRef.current.stop();
+          // 実際の音楽も停止（重要！）
+          toneAudioEngineRef.current.stop();
           setIsPlaying(false);
           console.log('⏸ Auto-stopped: No taps for', AUTO_STOP_DELAY, 'ms');
         }
       }
     }, 100); // 100msごとにチェック
 
-    return () => clearInterval(interval);
-  }, [isPlaying, AUTO_STOP_DELAY]);
+    return () => {
+      console.log('🛑 Auto-stop timer stopped');
+      clearInterval(interval);
+    };
+  }, [isPlaying]);
 
   /**
    * 音量変更
