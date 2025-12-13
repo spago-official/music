@@ -55,6 +55,21 @@ export interface SongSection {
  */
 export type TapJudgement = 'perfect' | 'good' | 'early' | 'late' | 'miss';
 
+/**
+ * 難易度
+ */
+export type Difficulty = 'easy' | 'normal' | 'hard';
+
+/**
+ * ビート情報
+ */
+export interface BeatInfo {
+  bar: number;         // 小節番号
+  beat: number;        // 小節内の拍番号
+  phase: number;       // 拍内位相 (0.0 ~ 1.0)
+  totalBeats: number;  // 総拍数
+}
+
 
 /**
  * タップイベント
