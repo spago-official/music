@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import TapPad from '@/components/TapPad';
 import TransportControls from '@/components/TransportControls';
 import TempoGuide from '@/components/TempoGuide';
+import TempoMeter from '@/components/TempoMeter';
 import Header from '@/components/Header';
 import HelpModal from '@/components/HelpModal';
 import { ToneAudioEngine } from '@/lib/audio/ToneAudioEngine';
@@ -35,6 +36,7 @@ function PlayContent() {
   const [lastJudgement, setLastJudgement] = useState<TapJudgement | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [estimatedBpm, setEstimatedBpm] = useState<number | null>(null);
 
 
   // 楽器が指定されていない場合はトップページにリダイレクト
@@ -240,6 +242,21 @@ function PlayContent() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleTap]);
 
+  /**
+   * 推定BPMを定期的に更新
+   */
+  useEffect(() => {
+    if (!isPlaying || !followModeRef.current) return;
+
+    const interval = setInterval(() => {
+      if (followModeRef.current) {
+        const estimated = followModeRef.current.getEstimatedBPM();
+        setEstimatedBpm(estimated);
+      }
+    }, 100); // 100msごとに更新
+
+    return () => clearInterval(interval);
+  }, [isPlaying]);
 
 
   /**
@@ -353,6 +370,15 @@ function PlayContent() {
             <div className="bg-white rounded-xl shadow-lg p-6">
               <TempoGuide bpm={bpm} isPlaying={isPlaying} />
             </div>
+          </div>
+
+          {/* テンポメーター */}
+          <div className="flex justify-center">
+            <TempoMeter
+              targetBpm={bpm}
+              currentBpm={estimatedBpm}
+              isPlaying={isPlaying}
+            />
           </div>
 
           {/* タップパッド */}
