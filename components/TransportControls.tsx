@@ -2,6 +2,7 @@
 
 interface TransportControlsProps {
   isPlaying: boolean;
+  isInitialized: boolean;
   volume: number;
   onPlayPause: () => void;
   onReset: () => void;
@@ -14,12 +15,19 @@ interface TransportControlsProps {
  */
 export default function TransportControls({
   isPlaying,
+  isInitialized,
   volume,
   onPlayPause,
   onReset,
   onVolumeChange,
   disabled = false,
 }: TransportControlsProps) {
+  const getButtonLabel = () => {
+    if (isPlaying) return '⏸ PAUSE';
+    if (isInitialized) return '▶ START';
+    return '🎵 READY';
+  };
+
   return (
     <div className="flex flex-col gap-6 w-full max-w-md bg-white rounded-xl shadow-lg p-6">
       {/* 再生コントロール */}
@@ -33,7 +41,7 @@ export default function TransportControls({
             transition-all shadow-md
           `}
         >
-          {isPlaying ? '⏸ PAUSE' : '▶ START'}
+          {getButtonLabel()}
         </button>
         <button
           onClick={onReset}

@@ -122,8 +122,9 @@ function PlayContent() {
    */
   const handlePlayPause = useCallback(async () => {
     if (!isInitialized) {
+      // 初期化のみ（再生はしない）
       await initialize();
-      if (!toneAudioEngineRef.current || !transportRef.current) return;
+      return;
     }
 
     const transport = transportRef.current!;
@@ -162,11 +163,22 @@ function PlayContent() {
    * タップハンドラ
    */
   const handleTap = useCallback(async () => {
+    // 初期化されていない場合は初期化
+    if (!isInitialized) {
+      await initialize();
+      if (!toneAudioEngineRef.current || !transportRef.current) return;
+    }
+
+    // 再生されていない場合は再生開始
     if (!isPlaying) {
-      // 初回タップで初期化して開始
-      if (!isInitialized) {
-        await handlePlayPause();
+      const transport = transportRef.current!;
+      const toneEngine = toneAudioEngineRef.current!;
+
+      if (!toneEngine.getIsPlaying()) {
+        toneEngine.play();
       }
+      transport.start();
+      setIsPlaying(true);
       return;
     }
 
@@ -177,7 +189,7 @@ function PlayContent() {
         setLastJudgement(tapEvent.judgement);
       }
     }
-  }, [isPlaying, isInitialized, handlePlayPause]);
+  }, [isPlaying, isInitialized]);
 
   /**
    * スペースキーでタップ
@@ -285,10 +297,20 @@ function PlayContent() {
 
         {/* メインコンテンツ */}
         <div className="max-w-4xl mx-auto space-y-8">
+          {/* 初期化済みで再生前の場合のメッセージ */}
+          {isInitialized && !isPlaying && (
+            <div className="text-center">
+              <p className="text-lg text-purple-600 font-semibold animate-pulse">
+                👇 タップパッドをタップして演奏を開始しましょう
+              </p>
+            </div>
+          )}
+
           {/* トランスポートコントロール */}
           <div className="flex justify-center">
             <TransportControls
               isPlaying={isPlaying}
+              isInitialized={isInitialized}
               volume={volume}
               onPlayPause={handlePlayPause}
               onReset={handleReset}
