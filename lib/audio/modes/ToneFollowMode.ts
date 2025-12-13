@@ -173,10 +173,6 @@ export class ToneFollowMode {
 
     // 再生速度を設定（音程を保つ）
     this.audioEngine.setPlaybackRate(newRate);
-
-    // Transportも同期（表示用）
-    const newBPM = this.baseBPM * newRate;
-    this.transport.setBPM(newBPM);
   }
 
   /**
@@ -184,7 +180,6 @@ export class ToneFollowMode {
    */
   private resetPlaybackRate(): void {
     this.audioEngine.setPlaybackRate(1.0);
-    this.transport.setBPM(this.baseBPM);
   }
 
   /**

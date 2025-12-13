@@ -226,21 +226,6 @@ function PlayContent() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleTap]);
 
-  /**
-   * BPMを定期的に更新
-   */
-  useEffect(() => {
-    if (!isPlaying || !transportRef.current) return;
-
-    const interval = setInterval(() => {
-      if (transportRef.current) {
-        const currentBpm = transportRef.current.getBPM();
-        setBpm(currentBpm);
-      }
-    }, 100); // 100msごとに更新
-
-    return () => clearInterval(interval);
-  }, [isPlaying]);
 
 
   /**
