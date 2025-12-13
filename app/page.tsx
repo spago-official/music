@@ -5,6 +5,8 @@ import TapPad from '@/components/TapPad';
 import TransportControls from '@/components/TransportControls';
 import TempoGuide from '@/components/TempoGuide';
 import InstrumentSelect from '@/components/InstrumentSelect';
+import Header from '@/components/Header';
+import HelpModal from '@/components/HelpModal';
 import { ToneAudioEngine } from '@/lib/audio/ToneAudioEngine';
 import { Transport } from '@/lib/audio/Transport';
 import { ToneFollowMode } from '@/lib/audio/modes/ToneFollowMode';
@@ -26,6 +28,7 @@ export default function Home() {
   const [selectedInstrument, setSelectedInstrument] = useState<InstrumentType>('full');
   const [lastJudgement, setLastJudgement] = useState<TapJudgement | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   /**
    * 選択された楽器の音源パスを取得
@@ -230,17 +233,13 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+      {/* ヘッダー */}
+      <Header onHelpClick={() => setIsHelpOpen(true)} />
+
+      {/* ヘルプモーダル */}
+      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+
       <div className="container mx-auto px-4 py-8">
-        {/* ヘッダー */}
-        <header className="text-center mb-12">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-            Tap Music
-          </h1>
-          <p className="text-gray-600">タップでリズムを刻もう</p>
-          <p className="text-sm text-gray-500 mt-2">
-            🎵 Playing: Spitz - Cherry (Demo)
-          </p>
-        </header>
 
         {/* エラー表示 */}
         {error && (
@@ -288,21 +287,6 @@ export default function Home() {
             />
           </div>
 
-          {/* 説明 */}
-          <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-6 text-sm text-gray-600 space-y-3">
-            <h3 className="font-semibold text-gray-800 text-base">使い方：</h3>
-            <ul className="list-disc list-inside space-y-1">
-              <li><strong>楽器を選択</strong>: Full Mix、Vocals、Bass、Drums、Otherから好きなパートを選べます</li>
-              <li>STARTボタンを押すと曲が再生開始します</li>
-              <li>タップパッドをタップ（またはスペースキー）でリズムを刻みます</li>
-              <li><strong>タップのテンポに合わせて曲の速度が変わります</strong></li>
-              <li>ゆっくりタップすれば曲も遅くなり、速くタップすれば曲も速くなります</li>
-              <li>音程は保たれたまま、テンポだけが変わります</li>
-            </ul>
-            <p className="text-xs text-gray-500 mt-4">
-              ℹ️ <strong>ヒント</strong>: 好きな楽器パートを選んで、あなたのリズムで演奏しましょう！音程を変えずにテンポだけを変えられるので、自由な速さで楽しめます。
-            </p>
-          </div>
         </div>
 
         {/* フッター */}
