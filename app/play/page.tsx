@@ -163,13 +163,22 @@ function PlayContent() {
    * タップハンドラ
    */
   const handleTap = useCallback(async () => {
-    // 初期化されていない場合は初期化
+    // 初期化されていない場合は初期化して再生開始
     if (!isInitialized) {
       await initialize();
       if (!toneAudioEngineRef.current || !transportRef.current) return;
+
+      // 初期化完了後すぐに再生開始
+      const transport = transportRef.current;
+      const toneEngine = toneAudioEngineRef.current;
+
+      toneEngine.play();
+      transport.start();
+      setIsPlaying(true);
+      return;
     }
 
-    // 再生されていない場合は再生開始
+    // 初期化済みだが再生されていない場合は再生開始
     if (!isPlaying) {
       const transport = transportRef.current!;
       const toneEngine = toneAudioEngineRef.current!;
@@ -182,7 +191,7 @@ function PlayContent() {
       return;
     }
 
-    // FOLLOWモード処理
+    // FOLLOWモード処理（再生中のタップ）
     if (followModeRef.current) {
       const tapEvent = followModeRef.current.onTap(performance.now());
       if (tapEvent) {
