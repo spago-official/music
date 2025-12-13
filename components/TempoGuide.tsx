@@ -41,21 +41,21 @@ export default function TempoGuide({ bpm, isPlaying }: TempoGuideProps) {
   if (!isPlaying) return null;
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-2">
       <div className="text-center">
-        <p className="text-sm font-medium text-gray-700 mb-2">
+        <p className="text-xs font-medium text-gray-700 mb-1">
           目標テンポ: <span className="text-purple-600 font-bold">{bpm} BPM</span>
         </p>
-        <p className="text-xs text-gray-500">このリズムに合わせてタップしてください</p>
+        <p className="text-[10px] text-gray-500">このリズムに合わせてタップ</p>
       </div>
 
       {/* メトロノーム表示 */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         {[0, 1, 2, 3].map((i) => (
           <div
             key={i}
             className={`
-              w-12 h-12 rounded-full transition-all duration-100
+              w-8 h-8 rounded-full transition-all duration-100
               ${beatCount === i && isBeating
                 ? 'bg-purple-600 scale-125 shadow-lg'
                 : 'bg-gray-300'
@@ -70,7 +70,7 @@ export default function TempoGuide({ bpm, isPlaying }: TempoGuideProps) {
       <div className="flex items-center gap-2">
         <div
           className={`
-            text-4xl transition-transform duration-100
+            text-2xl transition-transform duration-100
             ${isBeating ? 'scale-125' : 'scale-100'}
           `}
         >

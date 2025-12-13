@@ -305,19 +305,19 @@ function PlayContent() {
       {/* ヘルプモーダル */}
       <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4">
         {/* 選択中の楽器表示 */}
-        <div className="max-w-4xl mx-auto mb-6">
-          <div className="bg-white rounded-xl shadow-lg p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-gray-600">選択中:</span>
-              <span className="text-lg font-bold text-purple-600">
+        <div className="max-w-4xl mx-auto mb-3">
+          <div className="bg-white rounded-lg shadow-md p-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-600">選択中:</span>
+              <span className="text-base font-bold text-purple-600">
                 {getInstrumentName(selectedInstrument)}
               </span>
             </div>
             <button
               onClick={handleChangeInstrument}
-              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-sm font-semibold transition-colors"
+              className="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 rounded-lg text-xs font-semibold transition-colors"
             >
               楽器を変更
             </button>
@@ -326,63 +326,63 @@ function PlayContent() {
 
         {/* エラー表示 */}
         {error && (
-          <div className="max-w-2xl mx-auto mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
-            <p className="font-semibold">⚠️ Error</p>
-            <p className="text-sm">{error}</p>
+          <div className="max-w-2xl mx-auto mb-3 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+            <p className="font-semibold text-sm">⚠️ Error</p>
+            <p className="text-xs">{error}</p>
           </div>
         )}
 
         {/* メインコンテンツ */}
-        <div className="max-w-4xl mx-auto space-y-8">
-          {/* 初期化済みで再生前の場合のメッセージ */}
-          {isInitialized && !isPlaying && (
-            <div className="text-center">
-              <p className="text-lg text-purple-600 font-semibold animate-pulse">
-                👇 タップパッドをタップして演奏を開始しましょう
+        <div className="max-w-6xl mx-auto space-y-4">
+          {/* メッセージ */}
+          <div className="text-center min-h-[2rem]">
+            {isInitialized && !isPlaying && (
+              <p className="text-base text-purple-600 font-semibold animate-pulse">
+                👇 タップパッドをタップして演奏を開始
               </p>
-            </div>
-          )}
-
-          {/* 再生中のメッセージ */}
-          {isPlaying && (
-            <div className="text-center">
+            )}
+            {isPlaying && (
               <p className="text-sm text-orange-600 font-semibold">
                 ⚠️ タップし続けないと音楽が止まります（1.5秒以内にタップ）
               </p>
-            </div>
-          )}
-
-          {/* トランスポートコントロール */}
-          <div className="flex justify-center">
-            <TransportControls
-              isPlaying={isPlaying}
-              isInitialized={isInitialized}
-              volume={volume}
-              onPlayPause={handlePlayPause}
-              onReset={handleReset}
-              onVolumeChange={handleVolumeChange}
-              disabled={isLoading}
-            />
+            )}
           </div>
 
-          {/* テンポガイド */}
-          <div className="flex justify-center">
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <TempoGuide bpm={bpm} isPlaying={isPlaying} />
+          {/* 上段: TransportControls と TempoGuide/Meter */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* トランスポートコントロール */}
+            <div className="flex justify-center">
+              <TransportControls
+                isPlaying={isPlaying}
+                isInitialized={isInitialized}
+                volume={volume}
+                onPlayPause={handlePlayPause}
+                onReset={handleReset}
+                onVolumeChange={handleVolumeChange}
+                disabled={isLoading}
+              />
             </div>
-          </div>
 
-          {/* テンポメーター */}
-          <div className="flex justify-center">
-            <TempoMeter
-              targetBpm={bpm}
-              currentBpm={estimatedBpm}
-              isPlaying={isPlaying}
-            />
+            {/* テンポ情報 */}
+            <div className="space-y-3">
+              {/* テンポガイド */}
+              <div className="bg-white rounded-xl shadow-lg p-4">
+                <TempoGuide bpm={bpm} isPlaying={isPlaying} />
+              </div>
+
+              {/* テンポメーター */}
+              <div>
+                <TempoMeter
+                  targetBpm={bpm}
+                  currentBpm={estimatedBpm}
+                  isPlaying={isPlaying}
+                />
+              </div>
+            </div>
           </div>
 
           {/* タップパッド */}
-          <div className="flex justify-center">
+          <div className="flex justify-center pt-2">
             <TapPad
               onTap={handleTap}
               judgement={lastJudgement}
@@ -393,9 +393,8 @@ function PlayContent() {
         </div>
 
         {/* フッター */}
-        <footer className="text-center mt-16 text-sm text-gray-500">
+        <footer className="text-center mt-8 text-xs text-gray-400">
           <p>Built with Next.js + Web Audio API</p>
-          <p className="mt-1">🎵 Tap to the beat, feel the rhythm</p>
         </footer>
       </div>
     </div>

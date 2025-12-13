@@ -29,14 +29,14 @@ export default function TransportControls({
   };
 
   return (
-    <div className="flex flex-col gap-6 w-full max-w-md bg-white rounded-xl shadow-lg p-6">
+    <div className="flex flex-col gap-4 w-full max-w-md bg-white rounded-xl shadow-lg p-4">
       {/* 再生コントロール */}
-      <div className="flex gap-3 justify-center">
+      <div className="flex gap-2 justify-center">
         <button
           onClick={onPlayPause}
           disabled={disabled}
           className={`
-            px-8 py-3 rounded-lg font-semibold text-white
+            px-6 py-2 rounded-lg font-semibold text-white text-sm
             ${disabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700 active:scale-95'}
             transition-all shadow-md
           `}
@@ -47,7 +47,7 @@ export default function TransportControls({
           onClick={onReset}
           disabled={disabled}
           className={`
-            px-6 py-3 rounded-lg font-semibold
+            px-4 py-2 rounded-lg font-semibold text-sm
             ${disabled ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gray-200 hover:bg-gray-300 active:scale-95'}
             transition-all shadow-md
           `}
@@ -58,7 +58,7 @@ export default function TransportControls({
 
       {/* 音量コントロール */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-xs font-medium text-gray-700 mb-1.5">
           Volume: <span className="text-purple-600 font-bold">{Math.round(volume * 100)}%</span>
         </label>
         <input
