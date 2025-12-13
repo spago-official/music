@@ -177,7 +177,7 @@ function PlayContent() {
     // 初期化されていない場合は初期化して再生開始
     if (!isInitialized) {
       await initialize();
-      if (!toneAudioEngineRef.current || !transportRef.current) return;
+      if (!toneAudioEngineRef.current || !transportRef.current || !followModeRef.current) return;
 
       // 初期化完了後すぐに再生開始
       const transport = transportRef.current;
@@ -186,6 +186,12 @@ function PlayContent() {
       toneEngine.play();
       transport.start();
       setIsPlaying(true);
+
+      // ゲートを開いて音を出す
+      const tapEvent = followModeRef.current.onTap(performance.now());
+      if (tapEvent) {
+        setLastJudgement(tapEvent.judgement);
+      }
       return;
     }
 
@@ -199,6 +205,14 @@ function PlayContent() {
       }
       transport.start();
       setIsPlaying(true);
+
+      // ゲートを開いて音を出す
+      if (followModeRef.current) {
+        const tapEvent = followModeRef.current.onTap(performance.now());
+        if (tapEvent) {
+          setLastJudgement(tapEvent.judgement);
+        }
+      }
       return;
     }
 
