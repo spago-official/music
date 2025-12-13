@@ -22,6 +22,7 @@ function PlayContent() {
   const toneAudioEngineRef = useRef<ToneAudioEngine | null>(null);
   const transportRef = useRef<Transport | null>(null);
   const followModeRef = useRef<ToneFollowMode | null>(null);
+  const lastTapTimeRef = useRef<number>(0);
 
   // UI状態
   const [isInitialized, setIsInitialized] = useState(false);
@@ -35,6 +36,9 @@ function PlayContent() {
   const [lastJudgement, setLastJudgement] = useState<TapJudgement | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+
+  // タップがない場合の自動停止時間（ミリ秒）
+  const AUTO_STOP_DELAY = 2000; // 2秒
 
   // 楽器が指定されていない場合はトップページにリダイレクト
   useEffect(() => {
@@ -163,6 +167,9 @@ function PlayContent() {
    * タップハンドラ
    */
   const handleTap = useCallback(async () => {
+    // タップ時刻を記録
+    lastTapTimeRef.current = performance.now();
+
     // 初期化されていない場合は初期化して再生開始
     if (!isInitialized) {
       await initialize();
@@ -230,6 +237,29 @@ function PlayContent() {
 
     return () => clearInterval(interval);
   }, [isPlaying]);
+
+  /**
+   * タップがない場合の自動停止
+   */
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    const interval = setInterval(() => {
+      const now = performance.now();
+      const timeSinceLastTap = now - lastTapTimeRef.current;
+
+      // 最後のタップから一定時間経過したら自動停止
+      if (timeSinceLastTap > AUTO_STOP_DELAY) {
+        if (transportRef.current && toneAudioEngineRef.current) {
+          transportRef.current.stop();
+          setIsPlaying(false);
+          console.log('⏸ Auto-stopped: No taps for', AUTO_STOP_DELAY, 'ms');
+        }
+      }
+    }, 100); // 100msごとにチェック
+
+    return () => clearInterval(interval);
+  }, [isPlaying, AUTO_STOP_DELAY]);
 
   /**
    * 音量変更
@@ -311,6 +341,15 @@ function PlayContent() {
             <div className="text-center">
               <p className="text-lg text-purple-600 font-semibold animate-pulse">
                 👇 タップパッドをタップして演奏を開始しましょう
+              </p>
+            </div>
+          )}
+
+          {/* 再生中のメッセージ */}
+          {isPlaying && (
+            <div className="text-center">
+              <p className="text-sm text-orange-600 font-semibold">
+                ⚠️ タップし続けないと音楽が止まります（2秒以内にタップ）
               </p>
             </div>
           )}
