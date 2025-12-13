@@ -120,7 +120,7 @@ function PlayContent() {
   /**
    * 再生/一時停止
    */
-  const handlePlayPause = async () => {
+  const handlePlayPause = useCallback(async () => {
     if (!isInitialized) {
       await initialize();
       if (!toneAudioEngineRef.current || !transportRef.current) return;
@@ -141,12 +141,12 @@ function PlayContent() {
       transport.start();
       setIsPlaying(true);
     }
-  };
+  }, [isInitialized, isPlaying]);
 
   /**
    * リセット
    */
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     if (!transportRef.current || !toneAudioEngineRef.current) return;
 
     transportRef.current.reset();
@@ -156,16 +156,16 @@ function PlayContent() {
     }
     setIsPlaying(false);
     setLastJudgement(null);
-  };
+  }, []);
 
   /**
    * タップハンドラ
    */
-  const handleTap = useCallback(() => {
+  const handleTap = useCallback(async () => {
     if (!isPlaying) {
       // 初回タップで初期化して開始
       if (!isInitialized) {
-        handlePlayPause();
+        await handlePlayPause();
       }
       return;
     }
@@ -177,7 +177,7 @@ function PlayContent() {
         setLastJudgement(tapEvent.judgement);
       }
     }
-  }, [isPlaying, isInitialized]);
+  }, [isPlaying, isInitialized, handlePlayPause]);
 
   /**
    * スペースキーでタップ
@@ -193,6 +193,22 @@ function PlayContent() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleTap]);
+
+  /**
+   * BPMを定期的に更新
+   */
+  useEffect(() => {
+    if (!isPlaying || !transportRef.current) return;
+
+    const interval = setInterval(() => {
+      if (transportRef.current) {
+        const currentBpm = transportRef.current.getBPM();
+        setBpm(currentBpm);
+      }
+    }, 100); // 100msごとに更新
+
+    return () => clearInterval(interval);
+  }, [isPlaying]);
 
   /**
    * 音量変更
