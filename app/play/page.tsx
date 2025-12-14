@@ -385,15 +385,6 @@ function PlayContent() {
             </div>
           </div>
 
-          {/* メッセージ */}
-          <div className="text-center min-h-[2rem]">
-            {isInitialized && !isPlaying && (
-              <p className="text-base text-purple-600 font-semibold animate-pulse">
-                👇 タップパッドをタップして演奏を開始
-              </p>
-            )}
-          </div>
-
           {/* タップパッド */}
           <div className="flex justify-center pt-2">
             <TapPad
