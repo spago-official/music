@@ -40,8 +40,8 @@ export default function TempoMeter({ targetBpm, currentBpm, isPlaying }: TempoMe
     if (!currentBpm) return '---';
     const diff = getBpmDiff();
     if (Math.abs(diff) < 2) return 'PERFECT!';
-    if (diff > 0) return `+${diff.toFixed(1)} BPM (速い)`;
-    return `${diff.toFixed(1)} BPM (遅い)`;
+    if (diff > 0) return '速い';
+    return '遅い';
   };
 
   const position = getGaugePosition();

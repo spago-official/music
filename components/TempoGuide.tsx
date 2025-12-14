@@ -65,18 +65,6 @@ export default function TempoGuide({ bpm, isPlaying }: TempoGuideProps) {
           />
         ))}
       </div>
-
-      {/* 音符アイコン */}
-      <div className="flex items-center gap-2">
-        <div
-          className={`
-            text-2xl transition-transform duration-100
-            ${isBeating ? 'scale-125' : 'scale-100'}
-          `}
-        >
-          {isBeating ? '♪' : '♩'}
-        </div>
-      </div>
     </div>
   );
 }

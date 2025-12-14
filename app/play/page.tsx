@@ -298,7 +298,7 @@ function PlayContent() {
 
       <div className="container mx-auto px-4 py-4">
         {/* 選択中の楽器表示 */}
-        <div className="max-w-4xl mx-auto mb-3">
+        <div className="max-w-4xl mx-auto mb-1">
           <div className="bg-white rounded-lg shadow-md p-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-xs text-gray-600">選択中:</span>
@@ -317,14 +317,14 @@ function PlayContent() {
 
         {/* エラー表示 */}
         {error && (
-          <div className="max-w-2xl mx-auto mb-3 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+          <div className="max-w-2xl mx-auto mb-1 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
             <p className="font-semibold text-sm">⚠️ Error</p>
             <p className="text-xs">{error}</p>
           </div>
         )}
 
         {/* メインコンテンツ */}
-        <div className="max-w-6xl mx-auto space-y-4">
+        <div className="max-w-6xl mx-auto space-y-2">
           {/* メッセージ */}
           <div className="text-center min-h-[2rem]">
             {isInitialized && !isPlaying && (
