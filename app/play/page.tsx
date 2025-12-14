@@ -326,7 +326,7 @@ function PlayContent() {
         <div className="max-w-6xl mx-auto space-y-2">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* トランスポートコントロール */}
-            <div className="flex justify-center">
+            <div className="p-4">
               <TransportControls
                 isPlaying={isPlaying}
                 isInitialized={isInitialized}
