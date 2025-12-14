@@ -64,14 +64,6 @@ export default function TapPad({ onTap, judgement, currentBpm, disabled = false 
 
   return (
     <div className="flex flex-col items-center gap-8 w-full">
-      {/* BPM表示 */}
-      <div className="text-center">
-        <div className="text-5xl font-bold text-purple-600 transition-all">
-          {getBpmText(currentBpm)}
-        </div>
-        <div className="text-sm text-gray-500 mt-2">現在のテンポ</div>
-      </div>
-
       {/* タップパッド */}
       <div
         className={`
