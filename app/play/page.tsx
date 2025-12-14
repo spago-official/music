@@ -324,7 +324,6 @@ function PlayContent() {
 
         {/* メインコンテンツ */}
         <div className="max-w-6xl mx-auto space-y-2">
-          {/* 上段: TransportControls と TempoGuide/Meter */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* トランスポートコントロール */}
             <div className="flex justify-center">
@@ -339,7 +338,7 @@ function PlayContent() {
               />
             </div>
 
-            {/* テンポ情報 */}
+            {/* テンポ情報とタップパッド */}
             <div className="bg-white rounded-xl shadow-lg p-4 space-y-4">
               <TempoGuide bpm={bpm} isPlaying={isPlaying} />
               <TempoMeter
@@ -347,17 +346,13 @@ function PlayContent() {
                 currentBpm={estimatedBpm}
                 isPlaying={isPlaying}
               />
+              <TapPad
+                onTap={handleTap}
+                judgement={lastJudgement}
+                currentBpm={bpm}
+                disabled={isLoading || !isInitialized}
+              />
             </div>
-          </div>
-
-          {/* タップパッド */}
-          <div className="flex justify-center pt-2">
-            <TapPad
-              onTap={handleTap}
-              judgement={lastJudgement}
-              currentBpm={bpm}
-              disabled={isLoading || !isInitialized}
-            />
           </div>
         </div>
       </div>
