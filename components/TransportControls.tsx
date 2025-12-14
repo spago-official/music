@@ -55,23 +55,6 @@ export default function TransportControls({
           ⏹ RESET
         </button>
       </div>
-
-      {/* 音量コントロール */}
-      <div>
-        <label className="block text-xs font-medium text-gray-700 mb-1.5">
-          Volume: <span className="text-purple-600 font-bold">{Math.round(volume * 100)}%</span>
-        </label>
-        <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
-          value={volume}
-          onChange={(e) => onVolumeChange(Number(e.target.value))}
-          disabled={disabled}
-          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer disabled:cursor-not-allowed"
-        />
-      </div>
     </div>
   );
 }
