@@ -377,11 +377,6 @@ function PlayContent() {
             />
           </div>
         </div>
-
-        {/* フッター */}
-        <footer className="text-center mt-8 text-xs text-gray-400">
-          <p>Built with Next.js + Web Audio API</p>
-        </footer>
       </div>
     </div>
   );

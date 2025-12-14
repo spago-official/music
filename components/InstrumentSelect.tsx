@@ -55,9 +55,6 @@ export default function InstrumentSelect({
           </button>
         ))}
       </div>
-      <p className="text-xs text-gray-500 mt-4 text-center">
-        💡 ヒント: 分離された音源を選んで、それぞれのパートだけでリズムを刻めます
-      </p>
     </div>
   );
 }
