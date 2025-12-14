@@ -391,7 +391,7 @@ function PlayContent() {
               onTap={handleTap}
               judgement={lastJudgement}
               currentBpm={bpm}
-              disabled={isLoading}
+              disabled={isLoading || !isInitialized}
             />
           </div>
         </div>
