@@ -332,11 +332,6 @@ function PlayContent() {
                 👇 タップパッドをタップして演奏を開始
               </p>
             )}
-            {isPlaying && (
-              <p className="text-sm text-orange-600 font-semibold">
-                ⚠️ タップし続けないと音楽が止まります（1.5秒以内にタップ）
-              </p>
-            )}
           </div>
 
           {/* 上段: TransportControls と TempoGuide/Meter */}
