@@ -25,36 +25,33 @@ export default function InstrumentSelect({
   ];
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">
-        楽器を選択
-      </h3>
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        {instruments.map((instrument) => (
-          <button
-            key={instrument.id}
-            onClick={() => onChange(instrument.id)}
-            disabled={disabled}
-            className={`
-              p-4 rounded-lg border-2 transition-all duration-200
-              ${
-                selectedInstrument === instrument.id
-                  ? 'border-purple-600 bg-purple-50 shadow-md scale-105'
-                  : 'border-gray-200 bg-white hover:border-purple-300 hover:bg-purple-50'
-              }
-              ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-            `}
-          >
-            <div className="text-4xl mb-2">{instrument.icon}</div>
-            <div className="text-sm font-semibold text-gray-800">
+    <div className="flex flex-col gap-3 max-w-2xl mx-auto">
+      {instruments.map((instrument) => (
+        <button
+          key={instrument.id}
+          onClick={() => onChange(instrument.id)}
+          disabled={disabled}
+          className={`
+            flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-200 bg-white shadow-md
+            ${
+              selectedInstrument === instrument.id
+                ? 'border-purple-600 bg-purple-50 shadow-lg'
+                : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50'
+            }
+            ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+          `}
+        >
+          <div className="text-4xl">{instrument.icon}</div>
+          <div className="flex-1 text-left">
+            <div className="text-base font-semibold text-gray-800">
               {instrument.name}
             </div>
-            <div className="text-xs text-gray-500 mt-1">
+            <div className="text-xs text-gray-500">
               {instrument.description}
             </div>
-          </button>
-        ))}
-      </div>
+          </div>
+        </button>
+      ))}
     </div>
   );
 }
