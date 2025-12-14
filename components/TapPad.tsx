@@ -97,8 +97,8 @@ export default function TapPad({ onTap, judgement, currentBpm, disabled = false 
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-white text-center">
             <div className="text-4xl font-bold mb-2">🎵</div>
-            <div className="text-2xl font-semibold">
-              {disabled ? 'Loading...' : 'TAP'}
+            <div className={disabled ? 'text-base font-semibold' : 'text-2xl font-semibold'}>
+              {disabled ? 'READYを押してください' : 'TAP'}
             </div>
           </div>
         </div>
