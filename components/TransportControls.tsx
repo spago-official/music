@@ -29,32 +29,29 @@ export default function TransportControls({
   };
 
   return (
-    <div className="flex flex-col gap-4 w-full max-w-md bg-white rounded-xl shadow-lg p-4">
-      {/* 再生コントロール */}
-      <div className="flex gap-2 justify-center">
-        <button
-          onClick={onPlayPause}
-          disabled={disabled}
-          className={`
-            px-6 py-2 rounded-lg font-semibold text-white text-sm
-            ${disabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700 active:scale-95'}
-            transition-all shadow-md
-          `}
-        >
-          {getButtonLabel()}
-        </button>
-        <button
-          onClick={onReset}
-          disabled={disabled}
-          className={`
-            px-4 py-2 rounded-lg font-semibold text-sm
-            ${disabled ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gray-200 hover:bg-gray-300 active:scale-95'}
-            transition-all shadow-md
-          `}
-        >
-          ⏹ RESET
-        </button>
-      </div>
+    <div className="flex gap-2 justify-center">
+      <button
+        onClick={onPlayPause}
+        disabled={disabled}
+        className={`
+          px-6 py-2 rounded-lg font-semibold text-white text-sm
+          ${disabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700 active:scale-95'}
+          transition-all shadow-md
+        `}
+      >
+        {getButtonLabel()}
+      </button>
+      <button
+        onClick={onReset}
+        disabled={disabled}
+        className={`
+          px-4 py-2 rounded-lg font-semibold text-sm
+          ${disabled ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gray-200 hover:bg-gray-300 active:scale-95'}
+          transition-all shadow-md
+        `}
+      >
+        ⏹ RESET
+      </button>
     </div>
   );
 }
