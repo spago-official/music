@@ -48,7 +48,7 @@ export default function TempoMeter({ targetBpm, currentBpm, isPlaying }: TempoMe
   const color = getColor();
 
   return (
-    <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-4">
+    <div className="w-full">
       <div className="text-center mb-2">
         <h3 className="text-xs font-semibold text-gray-700">テンポメーター (目標: {targetBpm} BPM)</h3>
       </div>
