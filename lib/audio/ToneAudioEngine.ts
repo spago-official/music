@@ -15,6 +15,9 @@ export class ToneAudioEngine {
   private currentPlaybackRate: number = 1.0;
   private playStartTime: number = 0; // 再生開始時刻（performance.now()）
   private playStartOffset: number = 0; // 再生開始時の曲内オフセット
+  private totalPlayedTime: number = 0; // 累積再生時間（秒）
+  private gateOpenTime: number = 0; // ゲートが開いた時刻（performance.now()）
+  private isGateOpen: boolean = false; // ゲートが開いているか
 
   /**
    * 初期化（ユーザージェスチャー後に呼ぶ）
@@ -121,6 +124,9 @@ export class ToneAudioEngine {
     this.stop();
     this.playStartTime = 0;
     this.playStartOffset = 0;
+    this.totalPlayedTime = 0;
+    this.gateOpenTime = 0;
+    this.isGateOpen = false;
     if (this.gateGain) {
       this.gateGain.gain.cancelScheduledValues(Tone.now());
       this.gateGain.gain.value = 0;
@@ -134,6 +140,20 @@ export class ToneAudioEngine {
    */
   setGate(open: boolean, transitionMs: number = 50): void {
     if (!this.gateGain) return;
+
+    const now = performance.now();
+
+    if (open && !this.isGateOpen) {
+      // ゲートを開く
+      this.gateOpenTime = now;
+      this.isGateOpen = true;
+    } else if (!open && this.isGateOpen) {
+      // ゲートを閉じる - 再生時間を累積
+      const elapsedMs = now - this.gateOpenTime;
+      const elapsedSec = (elapsedMs / 1000) * this.currentPlaybackRate;
+      this.totalPlayedTime += elapsedSec;
+      this.isGateOpen = false;
+    }
 
     const targetValue = open ? 1.0 : 0.0;
     const transitionSec = transitionMs / 1000;
@@ -195,22 +215,21 @@ export class ToneAudioEngine {
   }
 
   /**
-   * 現在の再生位置（秒）
-   * ループ再生の場合、曲の長さで剰余を取る
+   * 累積再生時間（秒）
+   * 実際に音が鳴っていた時間の合計
    */
   getCurrentTime(): number {
-    if (!this.isPlaying || !this.player) return 0;
+    let total = this.totalPlayedTime;
 
-    const duration = this.getDuration();
-    if (duration === 0) return 0;
+    // ゲートが開いている場合は、現在の再生中の時間も加算
+    if (this.isGateOpen) {
+      const now = performance.now();
+      const elapsedMs = now - this.gateOpenTime;
+      const elapsedSec = (elapsedMs / 1000) * this.currentPlaybackRate;
+      total += elapsedSec;
+    }
 
-    // 経過時間（秒）を計算（再生速度を考慮）
-    const elapsedMs = performance.now() - this.playStartTime;
-    const elapsedSec = (elapsedMs / 1000) * this.currentPlaybackRate;
-
-    // ループを考慮して曲内の位置を計算
-    const totalTime = this.playStartOffset + elapsedSec;
-    return totalTime % duration;
+    return total;
   }
 
   /**
