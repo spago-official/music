@@ -1,6 +1,6 @@
 /**
  * ToneAudioEngine - Tone.jsを使ったオーディオエンジン
- * 音程を保ったままテンポを変更可能（Player + PitchShift使用）
+ * シンプルな再生速度変更（音程も変わる）
  */
 
 import * as Tone from 'tone';
@@ -8,7 +8,6 @@ import { AudioEngineConfig } from '../types';
 
 export class ToneAudioEngine {
   private player: Tone.Player | null = null;
-  private pitchShift: Tone.PitchShift | null = null;
   private masterGain: Tone.Gain | null = null;
   private gateGain: Tone.Gain | null = null;
   private isInitialized: boolean = false;
@@ -28,24 +27,15 @@ export class ToneAudioEngine {
       // マスターゲイン
       this.masterGain = new Tone.Gain(0.8).toDestination();
 
-      // ピッチシフト（音程補正用）
-      this.pitchShift = new Tone.PitchShift({
-        pitch: 0,           // 初期値：ピッチ変更なし
-        windowSize: 0.1,    // 窓サイズ（秒）
-        delayTime: 0,       // 遅延なし
-        feedback: 0,        // フィードバックなし
-      });
-
       // ゲート用ゲイン（初期値0 = 無音）
       this.gateGain = new Tone.Gain(0);
 
-      // 接続: Player -> PitchShift -> GateGain -> MasterGain -> Destination
-      this.pitchShift.connect(this.gateGain);
+      // 接続: Player -> GateGain -> MasterGain -> Destination
       this.gateGain.connect(this.masterGain);
 
       this.isInitialized = true;
 
-      console.log('🎵 ToneAudioEngine initialized with PitchShift', {
+      console.log('🎵 ToneAudioEngine initialized', {
         sampleRate: Tone.getContext().sampleRate,
         state: Tone.getContext().state,
       });
@@ -59,7 +49,7 @@ export class ToneAudioEngine {
    * オーディオファイルを読み込み
    */
   async load(url: string): Promise<void> {
-    if (!this.isInitialized || !this.pitchShift) {
+    if (!this.isInitialized || !this.gateGain) {
       throw new Error('ToneAudioEngine not initialized');
     }
 
@@ -78,13 +68,13 @@ export class ToneAudioEngine {
         autostart: false,
       });
 
-      // PitchShiftに接続
-      this.player.connect(this.pitchShift);
+      // GateGainに直接接続
+      this.player.connect(this.gateGain);
 
       // 読み込み完了を待つ
       await Tone.loaded();
 
-      console.log('✅ Audio loaded with Player + PitchShift:', {
+      console.log('✅ Audio loaded:', {
         duration: this.player.buffer.duration,
       });
     } catch (error) {
@@ -147,26 +137,19 @@ export class ToneAudioEngine {
   }
 
   /**
-   * 再生速度を設定（音程を保つ）
+   * 再生速度を設定（音程も変わる）
    * @param rate 再生速度（1.0が通常速度）
    */
   setPlaybackRate(rate: number): void {
-    if (!this.player || !this.pitchShift) return;
+    if (!this.player) return;
 
     this.currentPlaybackRate = rate;
 
-    // playbackRateを変更
+    // playbackRateを変更（音程も変わる）
     this.player.playbackRate = rate;
 
-    // playbackRateによる音程変化を補正
-    // rate が 2.0 なら 1オクターブ上がるので、-12半音シフト
-    // rate が 0.5 なら 1オクターブ下がるので、+12半音シフト
-    const pitchShiftInSemitones = -12 * Math.log2(rate);
-    this.pitchShift.pitch = pitchShiftInSemitones;
-
-    console.log('🎵 Playback rate adjusted (pitch-preserved):', {
+    console.log('🎵 Playback rate adjusted:', {
       rate: rate.toFixed(3),
-      pitchShift: pitchShiftInSemitones.toFixed(2) + ' semitones',
     });
   }
 
@@ -222,9 +205,9 @@ export class ToneAudioEngine {
       this.player.dispose();
       this.player = null;
     }
-    if (this.pitchShift) {
-      this.pitchShift.dispose();
-      this.pitchShift = null;
+    if (this.gateGain) {
+      this.gateGain.dispose();
+      this.gateGain = null;
     }
     if (this.masterGain) {
       this.masterGain.dispose();
