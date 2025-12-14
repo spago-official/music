@@ -325,15 +325,6 @@ function PlayContent() {
 
         {/* メインコンテンツ */}
         <div className="max-w-6xl mx-auto space-y-2">
-          {/* メッセージ */}
-          <div className="text-center min-h-[2rem]">
-            {isInitialized && !isPlaying && (
-              <p className="text-base text-purple-600 font-semibold animate-pulse">
-                👇 タップパッドをタップして演奏を開始
-              </p>
-            )}
-          </div>
-
           {/* 上段: TransportControls と TempoGuide/Meter */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* トランスポートコントロール */}
@@ -358,6 +349,15 @@ function PlayContent() {
                 isPlaying={isPlaying}
               />
             </div>
+          </div>
+
+          {/* メッセージ */}
+          <div className="text-center min-h-[2rem]">
+            {isInitialized && !isPlaying && (
+              <p className="text-base text-purple-600 font-semibold animate-pulse">
+                👇 タップパッドをタップして演奏を開始
+              </p>
+            )}
           </div>
 
           {/* タップパッド */}
