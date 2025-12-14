@@ -103,12 +103,6 @@ export default function TapPad({ onTap, judgement, currentBpm, disabled = false 
           </div>
         </div>
       </div>
-
-      {/* ヘルプテキスト */}
-      <div className="text-center text-sm text-gray-600">
-        <p>タップして音楽を奏でよう</p>
-        <p className="text-xs mt-1">Tap to the beat / Press SPACE</p>
-      </div>
     </div>
   );
 }
