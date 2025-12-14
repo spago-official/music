@@ -6,7 +6,6 @@ import TapPad from '@/components/TapPad';
 import TransportControls from '@/components/TransportControls';
 import TempoGuide from '@/components/TempoGuide';
 import TempoMeter from '@/components/TempoMeter';
-import ProgressBar from '@/components/ProgressBar';
 import Header from '@/components/Header';
 import HelpModal from '@/components/HelpModal';
 import { ToneAudioEngine } from '@/lib/audio/ToneAudioEngine';
@@ -43,8 +42,6 @@ function PlayContent() {
   const [error, setError] = useState<string | null>(null);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [estimatedBpm, setEstimatedBpm] = useState<number | null>(null);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
 
 
   // 楽器が指定されていない場合はトップページにリダイレクト
@@ -253,30 +250,6 @@ function PlayContent() {
   }, [isPlaying]);
 
   /**
-   * 再生位置を定期的に更新
-   */
-  useEffect(() => {
-    if (!toneAudioEngineRef.current) return;
-
-    const engine = toneAudioEngineRef.current;
-
-    // 曲の長さを取得
-    const audioDuration = engine.getDuration();
-    setDuration(audioDuration);
-
-    // 再生位置を定期的に更新
-    const interval = setInterval(() => {
-      if (engine) {
-        const time = engine.getCurrentTime();
-        setCurrentTime(time);
-      }
-    }, 100); // 100msごとに更新
-
-    return () => clearInterval(interval);
-  }, [isInitialized, isPlaying]);
-
-
-  /**
    * 音量変更
    */
   const handleVolumeChange = (newVolume: number) => {
@@ -353,16 +326,8 @@ function PlayContent() {
         <div className="max-w-6xl mx-auto space-y-2">
           {/* 上段: TransportControls と TempoGuide/Meter */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* 左側: プログレスバーとトランスポートコントロール */}
-            <div className="flex flex-col items-center gap-2">
-              {/* プログレスバー */}
-              <ProgressBar
-                currentTime={currentTime}
-                duration={duration}
-                isPlaying={isPlaying}
-              />
-
-              {/* トランスポートコントロール */}
+            {/* トランスポートコントロール */}
+            <div className="flex justify-center">
               <TransportControls
                 isPlaying={isPlaying}
                 isInitialized={isInitialized}
