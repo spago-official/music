@@ -12,6 +12,7 @@ import { ToneAudioEngine } from '@/lib/audio/ToneAudioEngine';
 import { Transport } from '@/lib/audio/Transport';
 import { ToneFollowMode } from '@/lib/audio/modes/ToneFollowMode';
 import { TapJudgement, InstrumentType } from '@/lib/types';
+import { DEFAULT_AUDIO_SOURCE, getAudioPath, getSourceBPM } from '@/lib/audio-config';
 import * as Tone from 'tone';
 
 function PlayContent() {
@@ -24,11 +25,15 @@ function PlayContent() {
   const transportRef = useRef<Transport | null>(null);
   const followModeRef = useRef<ToneFollowMode | null>(null);
 
+  // 音源設定
+  const audioSourceId = 'demo'; // 現在は1つのみ
+  const sourceBPM = getSourceBPM(audioSourceId);
+
   // UI状態
   const [isInitialized, setIsInitialized] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [bpm, setBpm] = useState(130); // Cherry は大体130 BPM
+  const [bpm] = useState(sourceBPM); // 音源の正しいBPMを使用
   const [volume, setVolume] = useState(0.8);
   const [selectedInstrument, setSelectedInstrument] = useState<InstrumentType>(
     instrumentParam || 'full'
@@ -45,20 +50,6 @@ function PlayContent() {
       router.push('/');
     }
   }, [instrumentParam, router]);
-
-  /**
-   * 選択された楽器の音源パスを取得
-   */
-  const getAudioPath = (instrument: InstrumentType): string => {
-    const pathMap: Record<InstrumentType, string> = {
-      full: '/audio/demo.mp3',
-      vocals: '/audio/separated/vocals.wav',
-      bass: '/audio/separated/bass.wav',
-      drums: '/audio/separated/drums.wav',
-      other: '/audio/separated/other.wav',
-    };
-    return pathMap[instrument];
-  };
 
   /**
    * 楽器名を日本語で取得
@@ -85,7 +76,7 @@ function PlayContent() {
 
     try {
       // 選択された楽器の音源パスを取得
-      const audioPath = getAudioPath(selectedInstrument);
+      const audioPath = getAudioPath(audioSourceId, selectedInstrument);
 
       // Tone.jsを使用（ピッチ保存のため）
       const toneEngine = new ToneAudioEngine();

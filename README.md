@@ -201,16 +201,62 @@ DeviceMotionEvent/DeviceOrientationEventを使った操作
 
 ## 🔧 カスタマイズ
 
-### 音源の差し替え
+### 音源の追加・変更
 
-`public/audio/demo.mp3`を任意の音源に差し替えてください。
+1. **音源ファイルの配置**
+   - `public/audio/`に音源ファイルを配置
+   - 分離音源の場合は`public/audio/separated/`に配置
 
-### BPM設定
+2. **BPMの測定**
+   - オンラインBPMツール（[TapTempo.io](https://taptempo.io/)など）を使用
+   - 音源を再生しながらビートに合わせてタップしてBPMを測定
 
-`app/page.tsx`の初期BPM値を変更：
+3. **設定ファイルの更新**
+
+`lib/audio-config.ts`に音源情報を追加：
 
 ```typescript
-const [bpm, setBpm] = useState(130); // ここを変更
+export const AUDIO_SOURCES: Record<string, AudioSource> = {
+  demo: {
+    id: 'demo',
+    meta: {
+      title: 'Cherry (Cover)',
+      artist: 'Unknown',
+      bpm: 130, // 測定したBPMを設定
+      timeSignature: [4, 4],
+    },
+    paths: {
+      full: '/audio/demo.mp3',
+      vocals: '/audio/separated/vocals.wav',
+      bass: '/audio/separated/bass.wav',
+      drums: '/audio/separated/drums.wav',
+      other: '/audio/separated/other.wav',
+    },
+  },
+  // 新しい音源を追加する場合
+  mySong: {
+    id: 'mySong',
+    meta: {
+      title: '曲名',
+      artist: 'アーティスト名',
+      bpm: 120, // 測定したBPM
+      timeSignature: [4, 4],
+    },
+    paths: {
+      full: '/audio/my-song.mp3',
+      vocals: '/audio/separated/my-song-vocals.wav',
+      // ... 他のパート
+    },
+  },
+};
+```
+
+4. **音源の切り替え**
+
+`app/play/page.tsx`で使用する音源IDを変更：
+
+```typescript
+const audioSourceId = 'mySong'; // 使用する音源IDを指定
 ```
 
 ### 判定窓の調整
