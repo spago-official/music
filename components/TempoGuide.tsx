@@ -38,8 +38,6 @@ export default function TempoGuide({ bpm, isPlaying }: TempoGuideProps) {
     return () => clearInterval(interval);
   }, [bpm, isPlaying]);
 
-  if (!isPlaying) return null;
-
   return (
     <div className="flex flex-col items-center gap-2">
       <div className="text-center">
