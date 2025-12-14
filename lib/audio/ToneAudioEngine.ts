@@ -13,6 +13,8 @@ export class ToneAudioEngine {
   private isInitialized: boolean = false;
   private isPlaying: boolean = false;
   private currentPlaybackRate: number = 1.0;
+  private playStartTime: number = 0; // 再生開始時刻（performance.now()）
+  private playStartOffset: number = 0; // 再生開始時の曲内オフセット
 
   /**
    * 初期化（ユーザージェスチャー後に呼ぶ）
@@ -95,6 +97,7 @@ export class ToneAudioEngine {
 
     this.player.start();
     this.isPlaying = true;
+    this.playStartTime = performance.now();
 
     console.log('▶️ Audio playing');
   }
@@ -116,6 +119,8 @@ export class ToneAudioEngine {
    */
   reset(): void {
     this.stop();
+    this.playStartTime = 0;
+    this.playStartOffset = 0;
     if (this.gateGain) {
       this.gateGain.gain.cancelScheduledValues(Tone.now());
       this.gateGain.gain.value = 0;
@@ -187,6 +192,25 @@ export class ToneAudioEngine {
    */
   getDuration(): number {
     return this.player?.buffer.duration || 0;
+  }
+
+  /**
+   * 現在の再生位置（秒）
+   * ループ再生の場合、曲の長さで剰余を取る
+   */
+  getCurrentTime(): number {
+    if (!this.isPlaying || !this.player) return 0;
+
+    const duration = this.getDuration();
+    if (duration === 0) return 0;
+
+    // 経過時間（秒）を計算（再生速度を考慮）
+    const elapsedMs = performance.now() - this.playStartTime;
+    const elapsedSec = (elapsedMs / 1000) * this.currentPlaybackRate;
+
+    // ループを考慮して曲内の位置を計算
+    const totalTime = this.playStartOffset + elapsedSec;
+    return totalTime % duration;
   }
 
   /**
