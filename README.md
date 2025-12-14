@@ -210,6 +210,9 @@ DeviceMotionEvent/DeviceOrientationEventを使った操作
 2. **BPMの測定**
    - オンラインBPMツール（[TapTempo.io](https://taptempo.io/)など）を使用
    - 音源を再生しながらビートに合わせてタップしてBPMを測定
+   - 既存の楽曲の場合、BPMデータベース（Songsterr、Tunebatなど）で確認可能
+   - 注意: 数え方（倍取り）によってBPMが2倍になることがあります
+     - 例: スピッツ「チェリー」は 97 BPM（倍取りで 194 BPM）
 
 3. **設定ファイルの更新**
 
@@ -221,8 +224,8 @@ export const AUDIO_SOURCES: Record<string, AudioSource> = {
     id: 'demo',
     meta: {
       title: 'Cherry (Cover)',
-      artist: 'Unknown',
-      bpm: 130, // 測定したBPMを設定
+      artist: 'Spitz',
+      bpm: 97, // スピッツ「チェリー」の正確なBPM
       timeSignature: [4, 4],
     },
     paths: {
@@ -296,9 +299,9 @@ MIT License
 
 ## 🙏 謝辞
 
-- 音源: Spitz - Cherry (デモ使用)
+- 音源: スピッツ「チェリー」(97 BPM) - デモ使用
 - フレームワーク: Next.js, React
-- Web標準: Web Audio API
+- Web標準: Web Audio API, Tone.js
 
 ---
 

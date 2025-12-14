@@ -17,16 +17,16 @@ export interface AudioSource {
 /**
  * 利用可能な音源
  *
- * NOTE: demo.mp3 は Cherry（SPYAIR）のカバー曲
- * 実際のBPMを測定して正確な値に更新してください
+ * NOTE: demo.mp3 はスピッツ「チェリー」のカバー曲
+ * 原曲のテンポは 97 BPM（倍取りで 194 BPM とも表記される）
  */
 export const AUDIO_SOURCES: Record<string, AudioSource> = {
   demo: {
     id: 'demo',
     meta: {
       title: 'Cherry (Cover)',
-      artist: 'Unknown',
-      bpm: 130, // TODO: 実際の音源のBPMを測定して正確な値に更新
+      artist: 'Spitz',
+      bpm: 97, // スピッツ「チェリー」の正確なBPM
       timeSignature: [4, 4],
     },
     paths: {
